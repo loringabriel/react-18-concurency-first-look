@@ -15,19 +15,36 @@ function filterProducts(filterTerm) {
 function App() {
   const [isPending, startTransition] = useTransition();
   const [filterTerm, setFilterTerm] = useState("");
+  const [concurentMode, setConcurentMode] = useState(true);
 
   const filteredProducts = filterProducts(filterTerm);
 
   function updateFilterHandler(event) {
-    startTransition(() => {
+    if (concurentMode) {
+      startTransition(() => {
+        setFilterTerm(event.target.value);
+      });
+    } else {
       setFilterTerm(event.target.value);
-    });
+    }
   }
 
   return (
     <div id="app">
-      <input type="text" onChange={updateFilterHandler} />
-      <div class="label">{isPending && "Updating..."}</div>
+      <div className="container">
+        <input
+          checked={concurentMode}
+          onChange={(e) => setConcurentMode(e.target.checked)}
+          type="checkbox"
+          id="concurent"
+          name="concurent"
+        />
+        <label for="concurent">Concurent Updates</label>
+      </div>
+
+      <input className="search" type="text" onChange={updateFilterHandler} />
+
+      <div className="label">{isPending && "Updating..."}</div>
       <ProductList products={filteredProducts} />
     </div>
   );
